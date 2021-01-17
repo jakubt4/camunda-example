@@ -12,8 +12,8 @@ public final class RestBasePathsUtil {
 
         private static final String WAIT = "/rest/wait";
 
-        public static String getWaitRest(String isWaiting) {
-            return WAIT + "/" + isWaiting;
+        public static String getWaitRest(Boolean isWaiting) {
+            return WAIT + "/" + isWaiting.toString().toLowerCase();
         }
     }
 
@@ -25,5 +25,10 @@ public final class RestBasePathsUtil {
         public static String getMessageRest(String proccesId) {
             return MESSAGE.replaceFirst(PROCCES_ID, proccesId);
         }
+    }
+
+    public static final class ProcessInfo {
+
+        public static final String PROCESS_INFO = "/process/info";
     }
 }

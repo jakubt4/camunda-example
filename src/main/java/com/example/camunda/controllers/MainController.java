@@ -9,13 +9,12 @@ import static j2html.TagCreator.br;
 import static j2html.TagCreator.html;
 
 import com.example.camunda.CamundaProcessApplication;
-import java.util.HashMap;
-import java.util.Map;
-import org.camunda.bpm.engine.RuntimeService;
+import com.example.camunda.services.InitService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,31 +27,27 @@ public class MainController {
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
 
     @Autowired
-    private RuntimeService runtimeService;
+    private InitService init;
 
-    @GetMapping("/main")
+    @GetMapping(value = "/main", produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
         LOG.info("[MAIN] init main page");
         return html(
                 createhref("Main", MAIN),
                 br(),
-                createhref("With WAIT", getWaitRest("true")),
+                createhref("With WAIT", getWaitRest(Boolean.TRUE)),
                 br(),
-                createhref("Without WAIT", getWaitRest("false")))
+                createhref("Without WAIT", getWaitRest(Boolean.FALSE)))
                 .renderFormatted();
     }
 
-    @GetMapping("/wait/{isWaiting}")
+    @GetMapping(value = "/wait/{isWaiting}", produces = MediaType.TEXT_HTML_VALUE)
     public String startProcess(@PathVariable("isWaiting") boolean isWaiting) {
         LOG.info("[START PROCESS] Starting {} process {} waiting",
                 CamundaProcessApplication.PROCESS_NAME,
                 isWaiting ? "with" : "without");
 
-        final Map<String, Object> params = new HashMap<>();
-        params.put("wait", isWaiting);
-
-        final ProcessInstance pi = runtimeService.startProcessInstanceByKey(CamundaProcessApplication.PROCESS_NAME,
-                params);
+        final ProcessInstance pi = init.initProcess(isWaiting);
 
         if (isWaiting) {
             LOG.info("[MESSAGE] Waiting for message..");
