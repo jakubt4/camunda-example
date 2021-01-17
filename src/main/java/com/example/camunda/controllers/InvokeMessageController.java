@@ -29,9 +29,11 @@ public class InvokeMessageController {
     public String startProcess(
             @PathVariable("processId") String processId,
             @PathVariable("message") String message) {
-        LOG.info("[INVOKE MESSAGE] Invoke message {} with process id {}.", message, processId);
+        LOG.info("[INVOKE MESSAGE PROCESS-ID:{}] Invoke message {} with process id {}.", processId, message, processId);
 
         return html(
+                a("PROCESS-ID:" + processId),
+                br(),
                 a("Result: " + invoker.invokeMessageForProcess(processId, message).getResultType().toString()),
                 br(),
                 createhref("Back to Main", MAIN))

@@ -10,6 +10,7 @@ import static j2html.TagCreator.html;
 
 import com.example.camunda.CamundaProcessApplication;
 import com.example.camunda.services.InitService;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MainController.class);
+    private static final AtomicInteger SESSION_ID = new AtomicInteger(0);
 
     @Autowired
     private InitService init;
 
     @GetMapping(value = "/main", produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
-        LOG.info("[MAIN] init main page");
+        LOG.info("[MAIN-{}] init main page", SESSION_ID.incrementAndGet());
         return html(
+                a("SESSION-" + SESSION_ID.get()),
+                br(),
                 createhref("Main", MAIN),
                 br(),
                 createhref("With WAIT", getWaitRest(Boolean.TRUE)),
@@ -50,15 +54,19 @@ public class MainController {
         final ProcessInstance pi = init.initProcess(isWaiting);
 
         if (isWaiting) {
-            LOG.info("[MESSAGE] Waiting for message..");
+            LOG.info("[MESSAGE-FOR-PROCESS-ID-{}] Waiting for message..", pi.getProcessInstanceId());
             return html(
+                    a("PROCESS-ID:" + pi.getProcessInstanceId()),
+                    br(),
                     a("Waiting for message. Invoke message by"),
                     createhref("THIS", getMessageRest(pi.getProcessInstanceId())))
                     .renderFormatted();
         }
 
-        LOG.info("[PROCESS] Finished.");
+        LOG.info("[PROCESS-ID:{}] Finished.", pi.getProcessInstanceId());
         return html(
+                a("PROCESS-ID:" + pi.getProcessInstanceId()),
+                br(),
                 a("Finished process instance id: " + pi.getProcessInstanceId()),
                 createhref("Back to Main", MAIN))
                 .renderFormatted();
