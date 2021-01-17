@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0dlc0u8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.5.0">
+  <bpmn:process id="CamundaProcess" name="CamundaProcess" isExecutable="true" camunda:versionTag="CamundaProcess">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0eyqxku</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0eyqxku" sourceRef="StartEvent_1" targetRef="Init" />
+    <bpmn:serviceTask id="Init" name="Init" camunda:class="com.example.camunda.services.Init">
+      <bpmn:incoming>Flow_0eyqxku</bpmn:incoming>
+      <bpmn:outgoing>Flow_1y7vkwz</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="condition">
+      <bpmn:incoming>Flow_1y7vkwz</bpmn:incoming>
+      <bpmn:outgoing>isWaiting</bpmn:outgoing>
+      <bpmn:outgoing>isNotWaiting</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1y7vkwz" sourceRef="Init" targetRef="condition" />
+    <bpmn:sequenceFlow id="isWaiting" name="IsWaiting" sourceRef="condition" targetRef="Message">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${wait}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="isNotWaiting" name="IsNotWaiting" sourceRef="condition" targetRef="Finish">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!wait}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_175jbw7" sourceRef="Message" targetRef="Finish" />
+    <bpmn:endEvent id="Event_0vy36wc">
+      <bpmn:incoming>Flow_13yh1qe</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_13yh1qe" sourceRef="Finish" targetRef="Event_0vy36wc" />
+    <bpmn:receiveTask id="Message" name="Message" camunda:asyncBefore="true" messageRef="Message_1qebt10">
+      <bpmn:incoming>isWaiting</bpmn:incoming>
+      <bpmn:outgoing>Flow_175jbw7</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:serviceTask id="Finish" name="Finish" camunda:class="com.example.camunda.services.Finish">
+      <bpmn:incoming>isNotWaiting</bpmn:incoming>
+      <bpmn:incoming>Flow_175jbw7</bpmn:incoming>
+      <bpmn:outgoing>Flow_13yh1qe</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmn:message id="Message_1qebt10" name="Message_1" />
+  <bpmn:message id="Message_0rxzwcw" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CamundaProcess">
+      <bpmndi:BPMNEdge id="Flow_0eyqxku_di" bpmnElement="Flow_0eyqxku">
+        <di:waypoint x="215" y="120" />
+        <di:waypoint x="330" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1y7vkwz_di" bpmnElement="Flow_1y7vkwz">
+        <di:waypoint x="430" y="120" />
+        <di:waypoint x="475" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r5fwta_di" bpmnElement="isWaiting">
+        <di:waypoint x="525" y="120" />
+        <di:waypoint x="610" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="546" y="102" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09fikeh_di" bpmnElement="isNotWaiting">
+        <di:waypoint x="500" y="145" />
+        <di:waypoint x="500" y="260" />
+        <di:waypoint x="830" y="260" />
+        <di:waypoint x="830" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="634" y="242" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_175jbw7_di" bpmnElement="Flow_175jbw7">
+        <di:waypoint x="710" y="120" />
+        <di:waypoint x="780" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13yh1qe_di" bpmnElement="Flow_13yh1qe">
+        <di:waypoint x="880" y="120" />
+        <di:waypoint x="972" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0cu8cdz_di" bpmnElement="Init">
+        <dc:Bounds x="330" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0he0dh9_di" bpmnElement="condition" isMarkerVisible="true">
+        <dc:Bounds x="475" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0vy36wc_di" bpmnElement="Event_0vy36wc">
+        <dc:Bounds x="972" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jayikp_di" bpmnElement="Message">
+        <dc:Bounds x="610" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vg9pwy_di" bpmnElement="Finish">
+        <dc:Bounds x="780" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
